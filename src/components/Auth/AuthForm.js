@@ -20,34 +20,41 @@ const AuthForm = () => {
 
 		// optimal: Add validation
 		setIsLoading(true)
+		let url;
 		if (isLogin) {
+			url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyBBMJ6o3AyqcZQm5Fz5vhc4rzvgqqklWz4';
 		} else {
-			fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyBBMJ6o3AyqcZQm5Fz5vhc4rzvgqqklWz4',
-				{
-					method: 'POST',
-					body: JSON.stringify({
-						email: enteredEmail,
-						passsword: enteredPassword,
-						returnSecureToken: true,
-					}),
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				}
+			url = 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=AIzaSyBBMJ6o3AyqcZQm5Fz5vhc4rzvgqqklWz4'
+			fetch(url, {
+				method: 'POST',
+				body: JSON.stringify({
+					email: enteredEmail,
+					passsword: enteredPassword,
+					returnSecureToken: true,
+				}),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
 			).then(res => {
 				setIsLoading(false)
 				if (res.ok) {
-					// ...
+					return res.json()
 				} else {
 					return res.json().then(data => {
 						let errorMessage = 'Authenication failed!'
-						if (data && data.error && data.error.message) {
-							errorMessage = data.error.message
-						}
-						alert(errorMessage)
+						// if (data && data.error && data.error.message) {
+						// 	errorMessage = data.error.message
+						// }
+						throw new Error(errorMessage)
 					})
 				}
+			}).then(data => {
+				console.log(data);
 			})
+				.catch(err => {
+					alert(err.Message)
+				})
 		}
 	}
 
